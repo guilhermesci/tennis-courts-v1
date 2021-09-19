@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
