@@ -9,12 +9,10 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateReservationRequestDTO {
 
     @NotNull
