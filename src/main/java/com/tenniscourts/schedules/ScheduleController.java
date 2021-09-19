@@ -2,31 +2,38 @@ package com.tenniscourts.schedules;
 
 import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-@AllArgsConstructor
+@RestController
+@RequestMapping("/api/v2/schedules")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ScheduleController extends BaseRestController {
 
     private final ScheduleService scheduleService;
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<Void> addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO) {
-        return ResponseEntity.created(locationByEntity(scheduleService.addSchedule(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO).getId())).build();
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ScheduleDTO addScheduleTennisCourt(@RequestBody @Valid CreateScheduleRequestDTO createScheduleRequestDTO) {
+        return scheduleService.addSchedule(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO);
     }
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<List<ScheduleDTO>> findSchedulesByDates(LocalDate startDate,
-                                                                  LocalDate endDate) {
-        return ResponseEntity.ok(scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)), LocalDateTime.of(endDate, LocalTime.of(23, 59))));
+    @GetMapping("/{startDate}/{endDate}")
+    public List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate) {
+        return scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)),
+                LocalDateTime.of(endDate, LocalTime.of(23, 59)));
     }
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<ScheduleDTO> findByScheduleId(Long scheduleId) {
-        return ResponseEntity.ok(scheduleService.findSchedule(scheduleId));
+    @GetMapping("/{scheduleId}")
+    public ScheduleDTO findScheduleById(@PathVariable Long scheduleId) {
+        return scheduleService.findScheduleById(scheduleId);
     }
 }

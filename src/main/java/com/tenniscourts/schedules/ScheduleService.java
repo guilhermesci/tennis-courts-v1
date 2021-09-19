@@ -24,7 +24,7 @@ public class ScheduleService {
         return null;
     }
 
-    public ScheduleDTO findSchedule(Long scheduleId) {
+    public ScheduleDTO findScheduleById(Long scheduleId) {
         //TODO: implement
         return null;
     }

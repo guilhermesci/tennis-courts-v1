@@ -20,7 +20,7 @@ public class ReservationService {
         throw new UnsupportedOperationException();
     }
 
-    public ReservationDTO findReservation(Long reservationId) {
+    public ReservationDTO findReservationById(Long reservationId) {
         return reservationRepository.findById(reservationId).map(reservationMapper::map).orElseThrow(() -> {
             throw new EntityNotFoundException("Reservation not found.");
         });
