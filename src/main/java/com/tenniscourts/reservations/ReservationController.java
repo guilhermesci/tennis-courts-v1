@@ -4,7 +4,6 @@ import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -12,7 +11,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v2/reservations")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class ReservationController extends BaseRestController {
+public class ReservationController extends BaseRestController implements ReservationControllerDocs {
 
     private final ReservationService reservationService;
 
@@ -32,8 +31,8 @@ public class ReservationController extends BaseRestController {
         return reservationService.cancelReservation(reservationId);
     }
 
-    @PatchMapping("/{reservationId}/reschedule")
-    public ReservationDTO rescheduleReservation(Long reservationId, Long scheduleId) {
+    @PatchMapping("/{reservationId}/reschedule/{scheduleId}")
+    public ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId) {
         return reservationService.rescheduleReservation(reservationId, scheduleId);
     }
 }

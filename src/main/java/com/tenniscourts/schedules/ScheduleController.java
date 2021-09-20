@@ -1,10 +1,10 @@
 package com.tenniscourts.schedules;
 
 import com.tenniscourts.config.BaseRestController;
+import com.tenniscourts.reservations.ReservationControllerDocs;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/schedules")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class ScheduleController extends BaseRestController {
+public class ScheduleController extends BaseRestController implements ScheduleControllerDocs {
 
     private final ScheduleService scheduleService;
 
