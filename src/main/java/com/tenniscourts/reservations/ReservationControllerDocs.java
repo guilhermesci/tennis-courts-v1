@@ -15,7 +15,7 @@ public interface ReservationControllerDocs {
             @ApiResponse(code = 201, message = "Success in reservation creation"),
             @ApiResponse(code = 400, message = "Missing required fields or incorrect values for field ranges")
     })
-    ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO);
+    ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) throws ReservationAlreadyBookedException;
 
     @ApiOperation(value = "Returns a reservation found by a valid given id")
     @ApiResponses(value = {
@@ -31,10 +31,10 @@ public interface ReservationControllerDocs {
     })
     ReservationDTO cancelReservation(@PathVariable Long reservationId);
 
-    @ApiOperation(value = "Reschedule a reservation by a valid given id")
+    @ApiOperation(value = "Reschedule a reservation by a valid given reservation and new schedule id")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success in reservation rescheduling"),
             @ApiResponse(code = 404, message = "Reservation not found with given id")
     })
-    ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId);
+    ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId) throws ReservationAlreadyBookedException;
 }

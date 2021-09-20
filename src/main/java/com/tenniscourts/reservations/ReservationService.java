@@ -2,22 +2,34 @@ package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-
     private final ReservationMapper reservationMapper;
 
-    public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
-        throw new UnsupportedOperationException();
+    public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) throws ReservationAlreadyBookedException {
+        verifyIfIsAlreadyBookedWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
+        Reservation reservation = reservationMapper.map(createReservationRequestDTO);
+        reservation.setValue(BigDecimal.valueOf(10));
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return reservationMapper.map(savedReservation);
+    }
+
+    private void verifyIfIsAlreadyBookedWithGivenScheduleId(Long scheduleId) throws ReservationAlreadyBookedException {
+        Optional<Reservation> optSavedReservation = reservationRepository.findByScheduleIdAndReservationStatus(scheduleId,ReservationStatus.READY_TO_PLAY);
+        if (optSavedReservation.isPresent()) {
+            throw new ReservationAlreadyBookedException(scheduleId);
+        }
     }
 
     public ReservationDTO findReservationById(Long reservationId) {
@@ -71,9 +83,7 @@ public class ReservationService {
         return BigDecimal.ZERO;
     }
 
-    /*TODO: This method actually not fully working, find a way to fix the issue when it's throwing the error:
-            "Cannot reschedule to the same slot.*/
-    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
+    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) throws ReservationAlreadyBookedException {
         Reservation previousReservation = cancel(previousReservationId);
 
         if (scheduleId.equals(previousReservation.getSchedule().getId())) {

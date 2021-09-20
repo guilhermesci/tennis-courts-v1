@@ -17,7 +17,7 @@ public class ReservationController extends BaseRestController implements Reserva
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationDTO bookReservation(@RequestBody @Valid CreateReservationRequestDTO createReservationRequestDTO) {
+    public ReservationDTO bookReservation(@RequestBody @Valid CreateReservationRequestDTO createReservationRequestDTO) throws ReservationAlreadyBookedException {
         return reservationService.bookReservation(createReservationRequestDTO);
     }
 
@@ -32,7 +32,7 @@ public class ReservationController extends BaseRestController implements Reserva
     }
 
     @PatchMapping("/{reservationId}/reschedule/{scheduleId}")
-    public ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId) {
+    public ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId) throws ReservationAlreadyBookedException {
         return reservationService.rescheduleReservation(reservationId, scheduleId);
     }
 }
