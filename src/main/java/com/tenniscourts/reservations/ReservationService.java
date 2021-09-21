@@ -1,6 +1,7 @@
 package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -16,12 +18,16 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
+    private final ScheduleService scheduleService;
 
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) throws ReservationAlreadyBookedException {
+        scheduleService.findScheduleById(createReservationRequestDTO.getScheduleId());
         verifyIfIsAlreadyBookedWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
+
         Reservation reservation = reservationMapper.map(createReservationRequestDTO);
         reservation.setValue(BigDecimal.valueOf(10));
         Reservation savedReservation = reservationRepository.save(reservation);
+
         return reservationMapper.map(savedReservation);
     }
 
@@ -74,30 +80,54 @@ public class ReservationService {
     }
 
     public BigDecimal getRefundValue(Reservation reservation) {
-        long hours = ChronoUnit.HOURS.between(LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
+        long minutes = ChronoUnit.MINUTES.between(LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
 
-        if (hours >= 24) {
-            return reservation.getValue();
-        }
+        BigDecimal feePercentage = getFeePercentage(minutes);
 
-        return BigDecimal.ZERO;
+        return reservation.getValue().subtract(reservation.getValue().multiply(feePercentage));
+    }
+
+    private BigDecimal getFeePercentage(Long minutes){
+        TreeMap<Long, BigDecimal> feeMap = new TreeMap<>();
+
+        feeMap.put(0L, BigDecimal.valueOf(1));      // 0min     | 00:00         -> 100%
+        feeMap.put(1L, BigDecimal.valueOf(0.75));   // 1min     | 00:01 - 01:59 -> 75%
+        feeMap.put(120L, BigDecimal.valueOf(0.5));  // 120min   | 02:00 - 11:59 -> 50%
+        feeMap.put(720L, BigDecimal.valueOf(0.25)); // 720min   | 12:00 - 23:59 -> 25%
+        feeMap.put(1440L, BigDecimal.ZERO);         // 1440min  | 24:00+        -> 0%
+
+        return feeMap.floorEntry(minutes).getValue();
     }
 
     public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) throws ReservationAlreadyBookedException {
+        verifyIfRescheduleIsValid(previousReservationId, scheduleId);
+
+        //Cancel previous reservation and update others attributes such as refundValue
         Reservation previousReservation = cancel(previousReservationId);
-
-        if (scheduleId.equals(previousReservation.getSchedule().getId())) {
-            throw new IllegalArgumentException("Cannot reschedule to the same slot.");
-        }
-
+        //Set the proper status for previousReservation
         previousReservation.setReservationStatus(ReservationStatus.RESCHEDULED);
         reservationRepository.save(previousReservation);
 
+        //Create a new reservation
         ReservationDTO newReservation = bookReservation(CreateReservationRequestDTO.builder()
                 .guestId(previousReservation.getGuest().getId())
                 .scheduleId(scheduleId)
                 .build());
         newReservation.setPreviousReservation(reservationMapper.map(previousReservation));
         return newReservation;
+    }
+
+    public void verifyIfRescheduleIsValid(Long previousReservationId, Long scheduleId) throws ReservationAlreadyBookedException {
+        //Check rescheduling attempt by selecting same slot
+        ReservationDTO previousReservationDTO = findReservationById(previousReservationId);
+        if (scheduleId.equals(previousReservationDTO.getSchedule().getId())) {
+            throw new IllegalArgumentException("Cannot reschedule to the same slot.");
+        }
+
+        //Check rescheduling attempt by selecting a schedule that has already been used
+        CreateReservationRequestDTO createReservationRequestDTO = CreateReservationRequestDTO.builder()
+                .guestId(previousReservationDTO.getGuestId())
+                .scheduleId(scheduleId).build();
+        verifyIfIsAlreadyBookedWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
     }
 }
