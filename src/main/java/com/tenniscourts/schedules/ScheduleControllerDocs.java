@@ -1,5 +1,6 @@
 package com.tenniscourts.schedules;
 
+import com.tenniscourts.exceptions.InvalidScheduleStartDateException;
 import com.tenniscourts.schedules.CreateScheduleRequestDTO;
 import com.tenniscourts.schedules.ScheduleDTO;
 import io.swagger.annotations.Api;
@@ -20,14 +21,14 @@ public interface ScheduleControllerDocs {
             @ApiResponse(code = 201, message = "Success in schedule creation"),
             @ApiResponse(code = 400, message = "Missing required fields or incorrect values for field ranges")
     })
-    ScheduleDTO addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO);
+    ScheduleDTO addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleStartDateException;
 
     @ApiOperation(value = "Returns a list of schedules found by a range of valid given dates")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success in schedules return"),
             @ApiResponse(code = 404, message = "Schedules not found with given dates")
     })
-    List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate);
+    List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate) throws InvalidScheduleStartDateException;
 
     @ApiOperation(value = "Return a schedule by a valid given id")
     @ApiResponses(value = {
@@ -35,4 +36,11 @@ public interface ScheduleControllerDocs {
             @ApiResponse(code = 404, message = "Schedule not found with given id")
     })
     ScheduleDTO findScheduleById(@PathVariable Long scheduleId);
+
+    @ApiOperation(value = "Return a list of schedules by a valid given tennis court id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success in tennis court's schedule list return"),
+            @ApiResponse(code = 404, message = "Schedules not found with given tennis court id")
+    })
+    List<ScheduleDTO> findSchedulesByTennisCourtId(@PathVariable Long tennisCourtId);
 }

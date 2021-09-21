@@ -1,9 +1,10 @@
 package com.tenniscourts.schedules;
 
 import com.tenniscourts.config.BaseRestController;
-import com.tenniscourts.reservations.ReservationControllerDocs;
+import com.tenniscourts.exceptions.InvalidScheduleStartDateException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,13 @@ public class ScheduleController extends BaseRestController implements ScheduleCo
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleDTO addScheduleTennisCourt(@RequestBody @Valid CreateScheduleRequestDTO createScheduleRequestDTO) {
-        return scheduleService.addSchedule(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO);
+    public ScheduleDTO addScheduleTennisCourt(@RequestBody @Valid CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleStartDateException {
+        return scheduleService.addSchedule(createScheduleRequestDTO);
     }
 
     @GetMapping("/{startDate}/{endDate}")
-    public List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate) {
+    public List<ScheduleDTO> findSchedulesByDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws InvalidScheduleStartDateException {
         return scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)),
                 LocalDateTime.of(endDate, LocalTime.of(23, 59)));
     }
@@ -35,5 +37,10 @@ public class ScheduleController extends BaseRestController implements ScheduleCo
     @GetMapping("/{scheduleId}")
     public ScheduleDTO findScheduleById(@PathVariable Long scheduleId) {
         return scheduleService.findScheduleById(scheduleId);
+    }
+
+    @GetMapping("/tennis-court/{tennisCourtId}")
+    public List<ScheduleDTO> findSchedulesByTennisCourtId(@PathVariable Long tennisCourtId) {
+        return scheduleService.findSchedulesByTennisCourtId(tennisCourtId);
     }
 }

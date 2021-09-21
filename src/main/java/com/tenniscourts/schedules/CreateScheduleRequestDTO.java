@@ -16,7 +16,7 @@ public class CreateScheduleRequestDTO {
     private Long tennisCourtId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @NotNull
+    @NotNull(message = "Start Date Time can not be null and must be in a yyyy-MM-dd'T'HH:mm format")
     private LocalDateTime startDateTime;
 
 }
