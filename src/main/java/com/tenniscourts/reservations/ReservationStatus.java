@@ -8,5 +8,7 @@ import lombok.Getter;
 public enum ReservationStatus {
   READY_TO_PLAY,
   CANCELLED,
-  RESCHEDULED
+  RESCHEDULED,
+  MISSED,
+  PLAYED
 }

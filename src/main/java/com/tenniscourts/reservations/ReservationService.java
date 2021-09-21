@@ -2,6 +2,7 @@ package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.exceptions.ReservationAlreadyBookedException;
+import com.tenniscourts.guests.GuestService;
 import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,12 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
     private final ScheduleService scheduleService;
+    private final GuestService guestService;
 
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) throws ReservationAlreadyBookedException {
+        guestService.findGuestById(createReservationRequestDTO.getGuestId());
         scheduleService.findScheduleById(createReservationRequestDTO.getScheduleId());
-        verifyIfIsAlreadyBookedWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
+        verifyIfExistsReservationReadyToPlayWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
 
         Reservation reservation = reservationMapper.map(createReservationRequestDTO);
         reservation.setValue(BigDecimal.valueOf(10));
@@ -32,7 +35,7 @@ public class ReservationService {
         return reservationMapper.map(savedReservation);
     }
 
-    private void verifyIfIsAlreadyBookedWithGivenScheduleId(Long scheduleId) throws ReservationAlreadyBookedException {
+    private void verifyIfExistsReservationReadyToPlayWithGivenScheduleId(Long scheduleId) throws ReservationAlreadyBookedException {
         Optional<Reservation> optSavedReservation = reservationRepository.findByScheduleIdAndReservationStatus(scheduleId,ReservationStatus.READY_TO_PLAY);
         if (optSavedReservation.isPresent()) {
             throw new ReservationAlreadyBookedException(scheduleId);
@@ -118,17 +121,17 @@ public class ReservationService {
         return newReservation;
     }
 
-    public void verifyIfRescheduleIsValid(Long previousReservationId, Long scheduleId) throws ReservationAlreadyBookedException {
+    public void verifyIfRescheduleIsValid(Long previousReservationId, Long newScheduleId) throws ReservationAlreadyBookedException {
         //Check rescheduling attempt by selecting same slot
         ReservationDTO previousReservationDTO = findReservationById(previousReservationId);
-        if (scheduleId.equals(previousReservationDTO.getSchedule().getId())) {
+        if (newScheduleId.equals(previousReservationDTO.getSchedule().getId())) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
 
         //Check rescheduling attempt by selecting a schedule that has already been used
         CreateReservationRequestDTO createReservationRequestDTO = CreateReservationRequestDTO.builder()
                 .guestId(previousReservationDTO.getGuestId())
-                .scheduleId(scheduleId).build();
-        verifyIfIsAlreadyBookedWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
+                .scheduleId(newScheduleId).build();
+        verifyIfExistsReservationReadyToPlayWithGivenScheduleId(createReservationRequestDTO.getScheduleId());
     }
 }
