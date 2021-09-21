@@ -1,7 +1,6 @@
 package com.tenniscourts.tenniscourts;
 
 import com.tenniscourts.config.BaseRestController;
-import com.tenniscourts.schedules.ScheduleControllerDocs;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
