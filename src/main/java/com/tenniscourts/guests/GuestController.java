@@ -42,7 +42,7 @@ public class GuestController implements GuestControllerDocs {
         guestService.deleteGuestById(guestId);
     }
 
-    @PutMapping("/{guestId}")
+    @PatchMapping("/{guestId}")
     public GuestDTO updateGuestById(@PathVariable Long guestId, @RequestBody @Valid GuestDTO guestDTO) {
         return guestService.updateGuestById(guestId, guestDTO);
     }

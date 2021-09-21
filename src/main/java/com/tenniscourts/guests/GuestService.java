@@ -41,7 +41,7 @@ public class GuestService {
     }
 
     public GuestDTO findGuestById(Long guestId) {
-        Guest guest = verifyIfGuestAlreadyExistsById(guestId);
+        Guest guest = verifyIfGuestExistsById(guestId);
 
         return guestMapper.map(guest);
     }
@@ -53,13 +53,14 @@ public class GuestService {
     }
 
     public void deleteGuestById(Long guestId) {
-        verifyIfGuestAlreadyExistsById(guestId);
+        verifyIfGuestExistsById(guestId);
 
         guestRepository.deleteById(guestId);
     }
 
     public GuestDTO updateGuestById(Long guestId, GuestDTO guestDTO) {
-        verifyIfGuestAlreadyExistsById(guestId);
+        verifyIfGuestExistsById(guestId);
+        guestDTO.setId(guestId);
 
         Guest guestToUpdate = guestMapper.map(guestDTO);
         Guest updatedGuest = guestRepository.save(guestToUpdate);
@@ -67,7 +68,7 @@ public class GuestService {
         return guestMapper.map(updatedGuest);
     }
 
-    private Guest verifyIfGuestAlreadyExistsById(Long guestId) {
+    private Guest verifyIfGuestExistsById(Long guestId) {
         return guestRepository.findById(guestId).orElseThrow(() -> new EntityNotFoundException("Guest not found"));
     }
 }
