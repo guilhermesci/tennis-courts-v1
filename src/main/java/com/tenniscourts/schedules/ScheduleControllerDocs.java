@@ -1,8 +1,6 @@
 package com.tenniscourts.schedules;
 
-import com.tenniscourts.exceptions.InvalidScheduleStartDateException;
-import com.tenniscourts.schedules.CreateScheduleRequestDTO;
-import com.tenniscourts.schedules.ScheduleDTO;
+import com.tenniscourts.exceptions.InvalidScheduleDateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,17 +16,17 @@ public interface ScheduleControllerDocs {
 
     @ApiOperation(value = "Add a new schedule for a tennis court")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success in schedule creation"),
+            @ApiResponse(code = 201, message = "Success in tennis court schedule creation"),
             @ApiResponse(code = 400, message = "Missing required fields or incorrect values for field ranges")
     })
-    ScheduleDTO addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleStartDateException;
+    ScheduleDTO addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleDateException;
 
     @ApiOperation(value = "Returns a list of schedules found by a range of valid given dates")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success in schedules return"),
-            @ApiResponse(code = 404, message = "Schedules not found with given dates")
+            @ApiResponse(code = 200, message = "Success in schedules list return"),
+            @ApiResponse(code = 404, message = "Invalid range of given dates")
     })
-    List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate) throws InvalidScheduleStartDateException;
+    List<ScheduleDTO> findSchedulesByDates(@PathVariable LocalDate startDate, @PathVariable LocalDate endDate) throws InvalidScheduleDateException;
 
     @ApiOperation(value = "Return a schedule by a valid given id")
     @ApiResponses(value = {
@@ -40,7 +38,7 @@ public interface ScheduleControllerDocs {
     @ApiOperation(value = "Return a list of schedules by a valid given tennis court id")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success in tennis court's schedule list return"),
-            @ApiResponse(code = 404, message = "Schedules not found with given tennis court id")
+            @ApiResponse(code = 404, message = "Tennis court not found with given tennis court id")
     })
     List<ScheduleDTO> findSchedulesByTennisCourtId(@PathVariable Long tennisCourtId);
 }

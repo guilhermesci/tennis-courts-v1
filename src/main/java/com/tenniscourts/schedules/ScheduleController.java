@@ -1,7 +1,7 @@
 package com.tenniscourts.schedules;
 
-import com.tenniscourts.config.BaseRestController;
-import com.tenniscourts.exceptions.InvalidScheduleStartDateException;
+
+import com.tenniscourts.exceptions.InvalidScheduleDateException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,19 +17,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/schedules")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class ScheduleController extends BaseRestController implements ScheduleControllerDocs {
+public class ScheduleController implements ScheduleControllerDocs {
 
     private final ScheduleService scheduleService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleDTO addScheduleTennisCourt(@RequestBody @Valid CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleStartDateException {
+    public ScheduleDTO addScheduleTennisCourt(@RequestBody @Valid CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleDateException {
         return scheduleService.addSchedule(createScheduleRequestDTO);
     }
 
     @GetMapping("/{startDate}/{endDate}")
     public List<ScheduleDTO> findSchedulesByDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws InvalidScheduleStartDateException {
+                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws InvalidScheduleDateException {
         return scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)),
                 LocalDateTime.of(endDate, LocalTime.of(23, 59)));
     }

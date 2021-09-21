@@ -25,10 +25,10 @@ public interface TennisCourtControllerDocs {
     })
     TennisCourtDTO findTennisCourtById(@PathVariable Long tennisCourtId);
 
-    @ApiOperation(value = "Returns a tennis court with schedules found by a valid given id")
+    @ApiOperation(value = "Returns the schedules of a tennis court found by a valid given tennis court id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success in tennis court return"),
-            @ApiResponse(code = 404, message = "Reservation not found with given id")
+            @ApiResponse(code = 200, message = "Success in tennis court's schedules return"),
+            @ApiResponse(code = 404, message = "Tennis court not found with given id")
     })
     TennisCourtDTO findTennisCourtWithSchedulesById(@PathVariable Long tennisCourtId);
 }

@@ -1,6 +1,6 @@
 package com.tenniscourts.reservations;
 
-import com.tenniscourts.config.BaseRestController;
+import com.tenniscourts.exceptions.ReservationAlreadyBookedException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v2/reservations")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class ReservationController extends BaseRestController implements ReservationControllerDocs {
+public class ReservationController implements ReservationControllerDocs {
 
     private final ReservationService reservationService;
 
@@ -31,8 +31,8 @@ public class ReservationController extends BaseRestController implements Reserva
         return reservationService.cancelReservation(reservationId);
     }
 
-    @PatchMapping("/{reservationId}/reschedule/{scheduleId}")
-    public ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long scheduleId) throws ReservationAlreadyBookedException {
-        return reservationService.rescheduleReservation(reservationId, scheduleId);
+    @PatchMapping("/{reservationId}/reschedule/{newScheduleId}")
+    public ReservationDTO rescheduleReservation(@PathVariable Long reservationId, @PathVariable Long newScheduleId) throws ReservationAlreadyBookedException {
+        return reservationService.rescheduleReservation(reservationId, newScheduleId);
     }
 }

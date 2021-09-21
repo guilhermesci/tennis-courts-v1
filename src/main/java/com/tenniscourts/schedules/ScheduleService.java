@@ -2,7 +2,7 @@ package com.tenniscourts.schedules;
 
 import com.tenniscourts.exceptions.AlreadyExistsEntityException;
 import com.tenniscourts.exceptions.EntityNotFoundException;
-import com.tenniscourts.exceptions.InvalidScheduleStartDateException;
+import com.tenniscourts.exceptions.InvalidScheduleDateException;
 import com.tenniscourts.tenniscourts.TennisCourt;
 import com.tenniscourts.tenniscourts.TennisCourtRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class ScheduleService {
     private final ScheduleMapper scheduleMapper;
     private final TennisCourtRepository tennisCourtRepository;
 
-    public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleStartDateException {
+    public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleDateException {
         verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(createScheduleRequestDTO.getStartDateTime());
         verifyIfScheduleIsAlreadyRegistered(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO.getStartDateTime());
 
@@ -41,17 +41,24 @@ public class ScheduleService {
         }
     }
 
-    private void verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(LocalDateTime startDateTime) throws InvalidScheduleStartDateException {
+    private void verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(LocalDateTime startDateTime) throws InvalidScheduleDateException {
         LocalDate minimumStartDate = LocalDate.now();
         LocalDate startDate = LocalDate.of(startDateTime.getYear(), startDateTime.getMonth(), startDateTime.getDayOfMonth());
         if (startDate.isBefore(minimumStartDate)) {
-            throw new InvalidScheduleStartDateException();
+            throw new InvalidScheduleDateException("Start date must be greater than or equal to today");
         }
     }
 
-    public List<ScheduleDTO> findSchedulesByDates(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleStartDateException {
+    public List<ScheduleDTO> findSchedulesByDates(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleDateException {
         verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(startDate);
+        verifyIfEndDateIsBeforeStartDate(startDate, endDate);
         return scheduleMapper.map(scheduleRepository.findByStartDateTimeBetweenOrderByTennisCourtIdAscStartDateTimeAsc(startDate, endDate));
+    }
+
+    private void verifyIfEndDateIsBeforeStartDate(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleDateException {
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidScheduleDateException("End date must be greater than or equal to start date");
+        }
     }
 
     public ScheduleDTO findScheduleById(Long scheduleId) {

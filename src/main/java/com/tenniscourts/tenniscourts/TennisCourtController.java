@@ -1,6 +1,5 @@
 package com.tenniscourts.tenniscourts;
 
-import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v2/tennis-courts")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class TennisCourtController extends BaseRestController implements TennisCourtControllerDocs {
+public class TennisCourtController implements TennisCourtControllerDocs {
 
     private final TennisCourtService tennisCourtService;
 

@@ -1,6 +1,5 @@
 package com.tenniscourts.guests;
 
-import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/guests")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class GuestController extends BaseRestController implements GuestControllerDocs {
+public class GuestController implements GuestControllerDocs {
 
     private final GuestService guestService;
 

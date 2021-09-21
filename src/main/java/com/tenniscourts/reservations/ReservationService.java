@@ -1,6 +1,7 @@
 package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.exceptions.ReservationAlreadyBookedException;
 import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,8 +100,8 @@ public class ReservationService {
         return feeMap.floorEntry(minutes).getValue();
     }
 
-    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) throws ReservationAlreadyBookedException {
-        verifyIfRescheduleIsValid(previousReservationId, scheduleId);
+    public ReservationDTO rescheduleReservation(Long previousReservationId, Long newScheduleId) throws ReservationAlreadyBookedException {
+        verifyIfRescheduleIsValid(previousReservationId, newScheduleId);
 
         //Cancel previous reservation and update others attributes such as refundValue
         Reservation previousReservation = cancel(previousReservationId);
@@ -111,7 +112,7 @@ public class ReservationService {
         //Create a new reservation
         ReservationDTO newReservation = bookReservation(CreateReservationRequestDTO.builder()
                 .guestId(previousReservation.getGuest().getId())
-                .scheduleId(scheduleId)
+                .scheduleId(newScheduleId)
                 .build());
         newReservation.setPreviousReservation(reservationMapper.map(previousReservation));
         return newReservation;

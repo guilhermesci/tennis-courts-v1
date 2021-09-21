@@ -1,6 +1,7 @@
 package com.tenniscourts.reservations;
 
 import com.tenniscourts.schedules.ScheduleDTO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +31,10 @@ public class ReservationDTO {
     private BigDecimal value;
 
     @NotNull
+    @ApiModelProperty(required = true)
     private Long scheduledId;
 
     @NotNull
+    @ApiModelProperty(required = true)
     private Long guestId;
 }

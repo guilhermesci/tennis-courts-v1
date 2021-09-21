@@ -1,5 +1,6 @@
 package com.tenniscourts.reservations;
 
+import com.tenniscourts.exceptions.ReservationAlreadyBookedException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -31,7 +32,7 @@ public interface ReservationControllerDocs {
     })
     ReservationDTO cancelReservation(@PathVariable Long reservationId);
 
-    @ApiOperation(value = "Reschedule a reservation by a valid given reservation and new schedule id")
+    @ApiOperation(value = "Reschedule a reservation by a valid given reservation id and new schedule id")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success in reservation rescheduling"),
             @ApiResponse(code = 404, message = "Reservation not found with given id")
