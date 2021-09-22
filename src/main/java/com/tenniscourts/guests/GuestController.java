@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v2/guests")
@@ -31,9 +32,9 @@ public class GuestController implements GuestControllerDocs {
         return guestService.findGuestById(guestId);
     }
 
-    @GetMapping
-    public GuestDTO findGuestByName(@RequestParam(value = "guestName") String guestName) {
-        return guestService.findGuestByName(guestName);
+    @GetMapping("/by-name/{guestName}")
+    public GuestDTO findGuestByName(@PathVariable String guestName) {
+        return guestService.findGuestByName(guestName.toLowerCase(Locale.ROOT));
     }
 
     @DeleteMapping("/{guestId}")

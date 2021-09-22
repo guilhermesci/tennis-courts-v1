@@ -27,7 +27,7 @@ public class GuestService {
     }
 
     private void verifyIfGuestAlreadyExistsByName(String name) {
-        Optional<Guest> optSavedGuest = guestRepository.findByName(name);
+        Optional<Guest> optSavedGuest = guestRepository.findByNameIgnoreCase(name);
         if (optSavedGuest.isPresent()) {
             throw new AlreadyExistsEntityException(String.format("Guest %s already exists",name));
         }
@@ -47,7 +47,7 @@ public class GuestService {
     }
 
     public GuestDTO findGuestByName(String name) {
-        Guest guest = guestRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Guest nor found"));
+        Guest guest = guestRepository.findByNameIgnoreCase(name).orElseThrow(() -> new EntityNotFoundException("Guest nor found"));
 
         return guestMapper.map(guest);
     }
