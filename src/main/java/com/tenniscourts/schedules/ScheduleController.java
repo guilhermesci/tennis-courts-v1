@@ -31,7 +31,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     public List<ScheduleDTO> findSchedulesByDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
                                                   @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws InvalidScheduleDateException {
         return scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)),
-                LocalDateTime.of(endDate, LocalTime.of(23, 59)));
+                                                    LocalDateTime.of(endDate, LocalTime.of(23, 59)));
     }
 
     @GetMapping("/{scheduleId}")
@@ -42,5 +42,11 @@ public class ScheduleController implements ScheduleControllerDocs {
     @GetMapping("/tennis-court/{tennisCourtId}")
     public List<ScheduleDTO> findSchedulesByTennisCourtId(@PathVariable Long tennisCourtId) {
         return scheduleService.findSchedulesByTennisCourtId(tennisCourtId);
+    }
+
+    @GetMapping("/free/{date}")
+    public List<ScheduleDTO> findFreeSchedulesByDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws InvalidScheduleDateException {
+        return scheduleService.findFreeSchedulesByDate(LocalDateTime.of(date, LocalTime.now()),
+                                                       LocalDateTime.of(date, LocalTime.of(23,59)));
     }
 }

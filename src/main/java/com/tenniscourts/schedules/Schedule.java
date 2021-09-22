@@ -31,6 +31,9 @@ public class Schedule extends BaseEntity<Long> {
     private LocalDateTime endDateTime;
 
     @OneToMany
+    @JoinTable(name = "RESERVATION",
+        joinColumns = @JoinColumn(name = "SCHEDULE_ID"),
+        inverseJoinColumns = @JoinColumn(name = "ID"))
     private List<Reservation> reservations;
 
     public void addReservation(Reservation reservation) {

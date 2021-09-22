@@ -3,6 +3,7 @@ package com.tenniscourts.schedules;
 import com.tenniscourts.exceptions.AlreadyExistsEntityException;
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.exceptions.InvalidScheduleDateException;
+import com.tenniscourts.reservations.ReservationStatus;
 import com.tenniscourts.tenniscourts.TennisCourt;
 import com.tenniscourts.tenniscourts.TennisCourtRepository;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -85,7 +87,18 @@ public class ScheduleService {
         }
     }
 
-//    public List<ScheduleDTO> findFreeSchedules() {
-//        return scheduleRepository
-//    }
+    public List<ScheduleDTO> findFreeSchedulesByDate(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleDateException {
+        verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(startDate);
+        List<Schedule> schedules = scheduleRepository.findByStartDateTimeBetweenOrderByTennisCourtIdAscStartDateTimeAsc(startDate, endDate);
+
+        return schedules.stream()
+                        .filter(schedule -> schedule.getReservations()
+                                .stream()
+                                .filter(x -> x.getReservationStatus()
+                                        .equals(ReservationStatus.READY_TO_PLAY))
+                                        .collect(Collectors.toList())
+                                        .isEmpty())
+                        .map(scheduleMapper::map)
+                        .collect(Collectors.toList());
+    }
 }

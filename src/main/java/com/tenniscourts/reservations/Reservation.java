@@ -20,7 +20,7 @@ public class Reservation extends BaseEntity<Long> {
     @OneToOne
     private Guest guest;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     private Schedule schedule;
 

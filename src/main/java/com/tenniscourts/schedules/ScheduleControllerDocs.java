@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
@@ -41,4 +42,11 @@ public interface ScheduleControllerDocs {
             @ApiResponse(code = 404, message = "Tennis court not found with given tennis court id")
     })
     List<ScheduleDTO> findSchedulesByTennisCourtId(@PathVariable Long tennisCourtId);
+
+    @ApiOperation(value = "Returns a list of free schedules found by a valid given date")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success in schedules list return"),
+            @ApiResponse(code = 404, message = "Invalid given date")
+    })
+    List<ScheduleDTO> findFreeSchedulesByDate(@PathVariable LocalDate date) throws InvalidScheduleDateException;
 }
