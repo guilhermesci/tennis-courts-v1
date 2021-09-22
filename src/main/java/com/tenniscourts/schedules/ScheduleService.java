@@ -23,8 +23,9 @@ public class ScheduleService {
     private final TennisCourtRepository tennisCourtRepository;
 
     public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleDateException {
+        verifyIfTennisCourtExistsWithGivenId(createScheduleRequestDTO.getTennisCourtId());
         verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(createScheduleRequestDTO.getStartDateTime());
-        verifyIfScheduleIsAlreadyRegistered(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO.getStartDateTime());
+        verifyIfScheduleAlreadyExists(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO.getStartDateTime());
 
         Schedule schedule = scheduleMapper.map(createScheduleRequestDTO);
         schedule.setEndDateTime(createScheduleRequestDTO.getStartDateTime().plusHours(1));
@@ -33,7 +34,7 @@ public class ScheduleService {
         return scheduleMapper.map(savedSchedule);
     }
 
-    private void verifyIfScheduleIsAlreadyRegistered(Long tennisCourtId, LocalDateTime startDateTime){
+    private void verifyIfScheduleAlreadyExists(Long tennisCourtId, LocalDateTime startDateTime){
         Optional<Schedule> optSavedSchedule = scheduleRepository.findByTennisCourtIdAndStartDateTime(tennisCourtId, startDateTime);
         if (optSavedSchedule.isPresent()) {
             throw new AlreadyExistsEntityException(String.format("Schedule starting at %t already exists for tennis_court_id: %d",
@@ -52,6 +53,7 @@ public class ScheduleService {
     public List<ScheduleDTO> findSchedulesByDates(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleDateException {
         verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(startDate);
         verifyIfEndDateIsBeforeStartDate(startDate, endDate);
+
         return scheduleMapper.map(scheduleRepository.findByStartDateTimeBetweenOrderByTennisCourtIdAscStartDateTimeAsc(startDate, endDate));
     }
 
@@ -66,15 +68,21 @@ public class ScheduleService {
         if ( !scheduleDTO.isPresent() ) {
             throw new EntityNotFoundException("Schedule not found");
         }
+
         return scheduleDTO.get();
     }
 
     public List<ScheduleDTO> findSchedulesByTennisCourtId(Long tennisCourtId) {
+        verifyIfTennisCourtExistsWithGivenId(tennisCourtId);
+
+        return scheduleMapper.map(scheduleRepository.findByTennisCourt_IdOrderByStartDateTime(tennisCourtId));
+    }
+
+    private void verifyIfTennisCourtExistsWithGivenId(Long tennisCourtId) {
         Optional<TennisCourt> tennisCourt = tennisCourtRepository.findById(tennisCourtId);
         if ( !tennisCourt.isPresent() ) {
             throw new EntityNotFoundException("Tennis court not found");
         }
-        return scheduleMapper.map(scheduleRepository.findByTennisCourt_IdOrderByStartDateTime(tennisCourtId));
     }
 
 //    public List<ScheduleDTO> findFreeSchedules() {
