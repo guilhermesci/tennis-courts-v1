@@ -44,4 +44,13 @@ public class Schedule extends BaseEntity<Long> {
         reservation.setSchedule(this);
         this.reservations.add(reservation);
     }
+
+    @Builder
+    public Schedule(Long id, TennisCourt tennisCourt, LocalDateTime startDateTime, LocalDateTime endDateTime, List<Reservation> reservations) {
+        super(id);
+        this.tennisCourt = tennisCourt;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.reservations = reservations;
+    }
 }

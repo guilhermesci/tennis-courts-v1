@@ -2,6 +2,7 @@ package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.exceptions.ReservationAlreadyBookedException;
+import com.tenniscourts.guests.GuestMapper;
 import com.tenniscourts.guests.GuestService;
 import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.TreeMap;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationMapper reservationMapper;
+    private final ReservationMapper reservationMapper = ReservationMapper.INSTANCE;
     private final ScheduleService scheduleService;
     private final GuestService guestService;
 

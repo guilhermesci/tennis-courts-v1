@@ -2,6 +2,7 @@ package com.tenniscourts.tenniscourts;
 
 import com.tenniscourts.exceptions.AlreadyExistsEntityException;
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.schedules.ScheduleMapper;
 import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,8 @@ import java.util.Optional;
 public class TennisCourtService {
 
     private final TennisCourtRepository tennisCourtRepository;
+    private final TennisCourtMapper tennisCourtMapper = TennisCourtMapper.INSTANCE;
     private final ScheduleService scheduleService;
-    private final TennisCourtMapper tennisCourtMapper;
 
     public TennisCourtDTO addTennisCourt(TennisCourtDTO tennisCourt) {
         verifyIfTennisCourtExistsWithGivenName(tennisCourt.getName());

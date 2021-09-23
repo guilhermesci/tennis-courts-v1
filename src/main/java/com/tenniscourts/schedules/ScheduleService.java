@@ -3,6 +3,7 @@ package com.tenniscourts.schedules;
 import com.tenniscourts.exceptions.AlreadyExistsEntityException;
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.exceptions.InvalidScheduleDateException;
+import com.tenniscourts.reservations.ReservationMapper;
 import com.tenniscourts.reservations.ReservationStatus;
 import com.tenniscourts.tenniscourts.TennisCourt;
 import com.tenniscourts.tenniscourts.TennisCourtRepository;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final ScheduleMapper scheduleMapper;
+    private final ScheduleMapper scheduleMapper = ScheduleMapper.INSTANCE;
     private final TennisCourtRepository tennisCourtRepository;
 
     public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) throws InvalidScheduleDateException {

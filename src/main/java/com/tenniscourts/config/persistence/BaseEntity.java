@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
@@ -49,4 +48,7 @@ public class BaseEntity<ID> implements Serializable {
     @CreatedDate
     private LocalDateTime dateCreate;
 
+    public BaseEntity(ID id) {
+        this.id = id;
+    }
 }

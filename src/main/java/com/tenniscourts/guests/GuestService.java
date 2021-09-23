@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class GuestService {
 
     private GuestRepository guestRepository;
-    private final GuestMapper guestMapper;
+    private final GuestMapper guestMapper = GuestMapper.INSTANCE;
 
     public GuestDTO addGuest(GuestDTO guestDTO) {
         verifyIfGuestAlreadyExistsByName(guestDTO.getName());

@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Reservation extends BaseEntity<Long> {
@@ -31,4 +30,18 @@ public class Reservation extends BaseEntity<Long> {
     private ReservationStatus reservationStatus = ReservationStatus.READY_TO_PLAY;
 
     private BigDecimal refundValue;
+
+    public Reservation(){
+    }
+
+    @Builder
+    public Reservation(Long id, Guest guest, Schedule schedule, BigDecimal value,
+                       ReservationStatus reservationStatus, BigDecimal refundValue) {
+        super(id);
+        this.guest = guest;
+        this.schedule = schedule;
+        this.value = value;
+        this.reservationStatus = reservationStatus;
+        this.refundValue = refundValue;
+    }
 }

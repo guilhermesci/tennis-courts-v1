@@ -18,4 +18,10 @@ public class TennisCourt extends BaseEntity<Long> {
     @Column
     @NotNull
     private String name;
+
+    @Builder
+    public TennisCourt(Long id, String name){
+        super(id);
+        this.name = name;
+    }
 }

@@ -18,4 +18,10 @@ public class Guest extends BaseEntity<Long> {
   @NotNull
   private String name;
 
+  @Builder
+  public Guest(Long id, String name){
+    super(id);
+    this.name = name;
+  }
+
 }
