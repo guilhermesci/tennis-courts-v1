@@ -90,6 +90,7 @@ public class ScheduleService {
 
     public List<ScheduleDTO> findFreeSchedulesByDate(LocalDateTime startDate, LocalDateTime endDate) throws InvalidScheduleDateException {
         verifyIfScheduleStartDateTimeIsGreaterThanEqualToday(startDate);
+        startDate = (startDate.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()) ? LocalDateTime.now() : startDate;
         List<Schedule> schedules = scheduleRepository.findByStartDateTimeBetweenOrderByTennisCourtIdAscStartDateTimeAsc(startDate, endDate);
 
         return schedules.stream()

@@ -46,7 +46,7 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     @GetMapping("/free/{date}")
     public List<ScheduleDTO> findFreeSchedulesByDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws InvalidScheduleDateException {
-        return scheduleService.findFreeSchedulesByDate(LocalDateTime.of(date, LocalTime.now()),
+        return scheduleService.findFreeSchedulesByDate(LocalDateTime.of(date, LocalTime.of(0,0)),
                                                        LocalDateTime.of(date, LocalTime.of(23,59)));
     }
 }
